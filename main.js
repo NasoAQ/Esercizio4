@@ -17,16 +17,16 @@ fetch(url)
     const booksContainer = document.getElementById('books-container');
     const cartContainer = document.getElementById('carrello');
 
+    //Creo la card utilizzando le classi di bootstrap
     function createBookCard(book,) {
 
       const card = document.createElement('div');
-      card.classList.add('card', 'mb-3');
+      card.classList.add('card', 'mb-3', 'h-100',);
   
       const img = document.createElement('img');
       img.classList.add('card-img-top');
       img.src = book.img;
           
-  
       const cardBody = document.createElement('div');
       cardBody.classList.add('card-body', 'd-flex', 'align-items-center', 'flex-column');
   
@@ -34,9 +34,9 @@ fetch(url)
       title.classList.add('card-title');
       title.textContent = book.title;
   
-      const category = document.createElement('p');
-      category.classList.add('card-text');
-      category.textContent = `Categoria: ${book.category}`;
+      // const category = document.createElement('p');
+      // category.classList.add('card-text');
+      // category.textContent = `Categoria: ${book.category}`;
   
       const price = document.createElement('p');
       price.classList.add('card-text');
@@ -47,12 +47,12 @@ fetch(url)
       addToCartButton.classList.add('btn', 'btn-warning', 'my-1');
       addToCartButton.textContent = 'Aggiungi al carrello';
 
-      
+      //Aggiungo un evento di tipo click per "aggiungere al carrello"
       addToCartButton.addEventListener('click', () => {
         addToCart(book, card)
       })
       
-      // Creare il pulsante "Salta prodotto"
+      // Creo il pulsante "Salta prodotto"
       const skipProductButton = document.createElement('button');
       skipProductButton.classList.add('btn', 'btn-secondary', 'my-1');
       skipProductButton.textContent = 'Salta prodotto';
@@ -64,62 +64,56 @@ fetch(url)
   
       //aggiungo le info nel body della card
       cardBody.appendChild(title);
-      cardBody.appendChild(category);
+      //cardBody.appendChild(category);
       cardBody.appendChild(price);
   
-  // Aggiungo i pulsanti al cardbody
+      // Aggiungo i pulsanti al cardbody
       cardBody.appendChild(addToCartButton);
       cardBody.appendChild(skipProductButton);
   
-  //aggiungo l'immagine alla card
+      //aggiungo l'immagine alla card
       card.appendChild(img);
-  //aggiungo il body alla card
+      //aggiungo il body alla card
       card.appendChild(cardBody);
   
       //infine ritorno la card completa
       return card;
   };
 
-  function addToCart(book, card) {
+    //Creo una funzione per aggiungere l'elemento nel carrello
+    function addToCart(book, card) {
     card.classList.add('added');
     // Stampo in console il libro aggiunto al carrello
     console.log(`Aggiunto al carrello: ${book.title},${book.price}€`);
+    // Riempio l'array del carrello utilizzando il metodo .push
     cart.push(book);
-
-    //const cartContainer = document.getElementById('carrello');
-    //const cartItem = document.createElement('div');
-    //cartItem.classList.add('col', 'col-12', 'mb-2');
-    //cartItem.textContent = `${book.title} - Prezzo: ${book.price}€`;
-
-    //cartContainer.appendChild(cartItem);
-    //console.log(`Aggiunto al carrello: ${book.title}`);
+    //Ritorno una funzione per renderizzare gli elementi nel carrello
     renderCart();
   }
 
     //Copio l'array originale della lista dei libri
     //let libriFiltrati = [...booksList];
 
+    //Funzione per visualizzare i libri nella pagina
     function renderBooks(books) {
       //Svuoto il container dei libri
-
       booksContainer.innerHTML = '';
-
-      //per ogni libro trovato creo un elemento html sfruttando le classi bootstrap per l'impaginazione utilizzando il metodo forEach
-
+      //per ogni libro trovato passo la funzione per creare la card utilizzando il metodo forEach
       books.forEach(book => {
         const col = document.createElement('div');
         col.classList.add('col-6', 'col-md-3');
-      
         const bookCard = createBookCard(book);
-
-      col.appendChild(bookCard)
-      booksContainer.appendChild(col);
+        //Aggiungo gli elementi nel container principale
+        col.appendChild(bookCard)
+        booksContainer.appendChild(col);
       });
     }
     
+    //Funzione per visualizzare gli elementi nel carrello
     function renderCart() {
+      //Svuoto il carrello
       cartContainer.innerHTML = '';
-    
+      //Se il carrello è vuoto inserisco un messaggio altrimenti creo una lista di elementi utilizzando le classi di bootstrap
       if (cart.length === 0) {
         const emptyCartMessage = document.createElement('p');
         emptyCartMessage.textContent = 'Nessun libro nel carrello.';
@@ -134,12 +128,13 @@ fetch(url)
 
           const cartItemContent = document.createElement('span')
           cartItemContent.textContent = `${book.title} - Prezzo: ${book.price} €`;
-    
+          //Pulsante per rimuovere dal carrello un singolo elemento
           const removeButton = document.createElement('button');
           removeButton.classList.add('btn', 'btn-danger', 'btn-sm', 'ml-2');
           removeButton.textContent = 'Rimuovi';
+          //Aggiungo un evento di tipo click al pulsante
           removeButton.addEventListener('click', () => removeFromCart(book));
-          
+          //Aggiungo la lista nel DOM
           cartItem.appendChild(cartItemContent)
           cartItem.appendChild(removeButton);
           cartList.appendChild(cartItem);
@@ -151,50 +146,59 @@ fetch(url)
         clearCartButton.textContent = 'Svuota carrello';
         clearCartButton.addEventListener('click', () => {
           cart.length = [];
+          //Richiamo la funzione per aggiornare la visualizzazione
           renderCart();
         });
-        
+
+        //Conto gli elementi nell'array del carrello
+        const cartCountElement = document.createElement('p');
+        cartCountElement.textContent = `Nel carrello ci sono ${cart.length} libri:`;
+
+        //Aggiungo gli elementi nel container del carrello
+        cartContainer.appendChild(cartCountElement);
         cartContainer.appendChild(cartList);
         cartContainer.appendChild(clearCartButton);
       }
     }
 
+    //Funzione per rimuovere gli elementi nel carrello
     function removeFromCart(book) {
+      //Cerco l'indice del libro da rimuovere dal carrello
       const bookIndex = cart.indexOf(book);
+      //Se l'indice trovato è diverso da -1 l'elemento può essere rimosso
       if (bookIndex !== -1) {
+        //Rimuovo l'elemento utilizzando il metodo .splice
         cart.splice(bookIndex, 1);
+        //Richiamo la funzione per aggiornare la visualizzazione
         renderCart();
       }
     }
 
     //Aggiungo un evento 'input' al campo di ricerca
-
     searchInput.addEventListener('input', () => {
+      //Rimuovo gli spazi all'inizio e alla fine del testo e trasformo tutto in minuscolo
       const searchText = searchInput.value.trim().toLowerCase();
-      //Creo una condizione in base alla lunghezza del testo digitato
+      //Se il testo inserito è uguale o maggiore di tre caratteri, mostro i libri cercati
       if (searchText.length >= 3) {
-
+        //Utilizzo il metodo filter per filtrare l'array dei libri
         const libriFiltrati = booksList.filter(book =>
+          //Faccio in modo che il titolo includa i caratteri inseriti
           book.title.toLowerCase().includes(searchText)
           );
+          //Richiamo la funzione renderBooks per aggiornare la visualizzazione nel DOM
           renderBooks(libriFiltrati);
-      } else {
-        //Se il testo inserito è troppo corto, mostro la lista completa dei libri
-       //libriFiltrati = [...booksList];
+      }
+      //Altrimenti mostro la lista completa dei libri 
+      else {
         renderBooks(booksList);
       }
     });
 
+    //Richiamo le funzioni per aggiornare la visualizzazione
     renderBooks(booksList);
     renderCart();   
   })
   .catch(error => {
     console.error('Si è verificato un errore durante la richiesta:', error);
   });
-
-
-
-
-
-
-  
+ 
