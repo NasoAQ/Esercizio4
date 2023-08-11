@@ -61,6 +61,20 @@ fetch(url)
         console.log(`Saltato prodotto: ${book.title}`);
         card.classList.add('d-none')
         });
+
+      // Creo il pulsante "Dettagli"
+      const detailsButton = document.createElement('button');
+      detailsButton.classList.add('btn', 'btn-outline-warning', 'my-1');
+      detailsButton.textContent = 'Dettagli';
+      //Definisco l'url della pagina "dettagli"
+      const detailsUrl = `/dettagli.html?id=${book.asin}`;
+
+      //Aggiungo un listener al pulsante per un evento di tipo click
+      detailsButton.addEventListener('click', () => {
+        window.location.href = detailsUrl;
+      });
+
+
   
       //aggiungo le info nel body della card
       cardBody.appendChild(title);
@@ -70,6 +84,7 @@ fetch(url)
       // Aggiungo i pulsanti al cardbody
       cardBody.appendChild(addToCartButton);
       cardBody.appendChild(skipProductButton);
+      cardBody.appendChild(detailsButton);
   
       //aggiungo l'immagine alla card
       card.appendChild(img);
@@ -201,4 +216,52 @@ fetch(url)
   .catch(error => {
     console.error('Si è verificato un errore durante la richiesta:', error);
   });
- 
+
+/////////////////////////////////
+//CODICE PER LA PAGINA DETTAGLI//
+/////////////////////////////////
+
+//Creo un nuovo oggetto rappresentante i parametri contenuti nell'URL
+const params = new URLSearchParams(location.search);
+//Estraggo il valore dell'ID utilizzando il metodo .get
+const asin = params.get("id");
+
+const detailsContainer = document.getElementById('book-details');
+//Creo l'URL completo con il parametro asin dinamico
+const apiUrl = `https://striveschool-api.herokuapp.com/books/${asin}`;
+
+//Creo una fetch per ottenere i dettagli del libro e creare una lista
+fetch(apiUrl)
+  .then(response => response.json())
+  .then(bookDetails => {
+
+    //Costruisco una lista con i dettagli del libro
+    const bookInfo = document.createElement('div');
+    bookInfo.classList.add('book-details');
+
+    const title = document.createElement('h2');
+    title.textContent = bookDetails.title;
+
+    const detailsList = document.createElement('ul');
+    detailsList.classList.add('list-group');
+
+    const categoryItem = document.createElement('li');
+    categoryItem.classList.add('list-group-item', 'list-group-item-warning');
+    categoryItem.textContent = `Categoria: ${bookDetails.category}`;
+
+    const priceItem = document.createElement('li');
+    priceItem.classList.add('list-group-item', 'list-group-item-warning');
+    priceItem.textContent = `Prezzo: ${bookDetails.price} €`;
+
+    detailsList.appendChild(categoryItem);
+    detailsList.appendChild(priceItem);
+
+    bookInfo.appendChild(title);
+    bookInfo.appendChild(detailsList);
+
+    document.getElementById('book-detail').appendChild(bookInfo);
+
+  })
+  .catch(error => {
+    console.error('Si è verificato un errore durante la richiesta: ', error);
+  });
